@@ -83,7 +83,7 @@ for url in urls:
 def save_file(input_string):
     # Generate a timestamped filename
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"output_{timestamp}.txt"
+    filename = f"output/output_{timestamp}.txt"
 
     # Save the input string to a file with the generated filename
     with open(filename, 'w+') as file:

@@ -1,6 +1,6 @@
 from agent import Agent
 from openai import OpenAI
-import tools 
+import tools
 from api_key import API_KEY
 
 client = OpenAI(api_key=API_KEY)  # The API key is loaded from api_key.py which you have to create manually.
@@ -67,6 +67,6 @@ if __name__ == '__main__':
     print(last_response)  # Final output
 
     # Save the final output to a txt file.
-    
+
     outfile = tools.save_file(f"**TOPIC: {prompt_topic}**\n\n{last_response}")
-    print(f"Done. Finaly output saved to {outfile}")
+    print(f"Done. Final output saved to {outfile}")
