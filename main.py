@@ -3,10 +3,11 @@ from openai import OpenAI
 import tools 
 from api_key import API_KEY
 
-client = OpenAI(api_key=API_KEY)
+client = OpenAI(api_key=API_KEY)  # The API key is loaded from api_key.py which you have to create manually.
 
-agents = []
+agents = []  # List to hold the agent objects in your chain
 
+# Example Agent to search the web, clean up the results and send them back.
 searchcleaner = Agent()
 searchcleaner.role = "text cleaner"
 searchcleaner.model = "gpt-4-1106-preview"
@@ -14,6 +15,7 @@ searchcleaner.description = "You receive messy and unorganized text from search 
 searchcleaner.prompts = ["Please clean up the following text and return the cleaned, clearly separated results without commentary or additional notes, but ALWAYS include the link to each search result at the end of each summary:"]
 agents.append(searchcleaner)
 
+# Example Agent to summarize text. This Agent has two tasks, first to summarize and organize the results from the text cleaner Agent, and then to summarize these summaries to use as an intro.
 summarizer = Agent()
 summarizer.role = "summarizer"
 summarizer.model = "gpt-3.5-turbo-0125"
@@ -25,11 +27,13 @@ agents.append(summarizer)
 
 if __name__ == '__main__':
     topic = input("What would you like news about? ")
-    prompt_topic = topic
+    prompt_topic = topic  # Original prompt is saved for later reference.
     sump = ""
     last_response = ""
 
     for agent in agents:
+
+        # Specific code to run, for each agent.
         if agent.role == "text cleaner":
             print("Searching the web ...")
             cleaned_text = ""
@@ -44,9 +48,10 @@ if __name__ == '__main__':
             print("Starting summarization.")
             topic = last_response
 
-        # prompt = f"{agent.prompt}\n\n{topic}"
+        # Basic description of the Agent
         agentrole = f"You are a helpful and friendly {agent.role}."
 
+        # Loops to cycle through each task/prompt for an Agent
         for p in agent.prompts:
             prompt = f"{p}\n\n{topic}"
         response = client.chat.completions.create(
@@ -59,6 +64,9 @@ if __name__ == '__main__':
         )
         last_response = response.choices[0].message.content
         print("Step complete.")
-    print(last_response)
+    print(last_response)  # Final output
+
+    # Save the final output to a txt file.
+    
     outfile = tools.save_file(f"**TOPIC: {prompt_topic}**\n\n{last_response}")
     print(f"Done. Finaly output saved to {outfile}")
