@@ -3,6 +3,18 @@ import datetime
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs, unquote
 
+def getResponse(prompt, agent, client):
+    print("Getting response from AI ...")
+    response = client.chat.completions.create(
+                model=agent.model,
+                messages=[
+                    {"role": "system", "content": agent.role},
+                    {"role": "system", "content": agent.description},
+                    {"role": "user", "content": prompt}
+                ]
+            )
+    return response.choices[0].message.content
+
 def simple_web_search(query, limit=10):
     # Example URL, replace with an allowed one
     url = f"https://www.duckduckgo.com/html/?q={query}&ia=news"
@@ -40,7 +52,7 @@ def scrape(url):
     content = ""
     try:
         response = requests.get(url, headers=headers)
-        print(f" - Status: {response.status_code} for URL: {url}")
+        print(f" - Status code {response.status_code} for URL: {url}")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -72,15 +84,9 @@ def scrape(url):
     return content
 
 
-'''# Example usage, but remember this might not work without proper adjustments and permissions
-query = "ukraine russia war"
-urls = simple_web_search(query, limit=5)
-for url in urls:
-    print(f"URL: {url}")
-    # print(scrape(real_url))'''
-
 
 def save_file(input_string):
+    print("Saving ...")
     # Generate a timestamped filename
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = f"output/output_{timestamp}.txt"
