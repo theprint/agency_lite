@@ -1,8 +1,10 @@
 import requests
 import datetime
+import config
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs, unquote
 
+# Method for generating a responce from the LLM
 def getResponse(prompt, agent, client):
     print("Getting response from AI ...")
     response = client.chat.completions.create(
@@ -15,15 +17,23 @@ def getResponse(prompt, agent, client):
             )
     return response.choices[0].message.content
 
+# Shortens text that is larger the max chunk size, defined in config.py
+def shorten(text, agent, client):
+    if (len(text) > config.MAX_CHUNK_SIZE):
+        print(f"Response was {len(text)} characters long. Shortening to nax. {config.MAX_CHUNK_SIZE} characters.")
+        text = getResponse(f"Shorten the following text while maintaining the link, all main points and arguments. Make sure the summary is under {config.MAX_CHUNK_SIZE} characters. The final output should have: a headline, the summary, and MUST include the link URL to the source story. TEXT TO SHORTEN: {text}", agent, client)
+        return text
+
+
+# Searches duckduckgo.com for something, extracts and cleans the source links from the results.
 def simple_web_search(query, limit=10):
-    # Example URL, replace with an allowed one
     url = f"https://www.duckduckgo.com/html/?q={query}&ia=news"
     headers = {'User-Agent': 'Mozilla/5.0'}
 
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    links = soup.findAll('a', class_='result__url', limit=limit)
+    links = soup.findAll('a', class_='result__url', limit=config.MAX_SEARCH_RESULTS)
     urls = [link['href'] for link in links[:limit]]  # Apply limit
 
     lid = 0
@@ -34,6 +44,7 @@ def simple_web_search(query, limit=10):
     return urls
 
 
+# Converts a search result url to the source it is point to
 def extract_actual_url(redirect_url):
     # Ensure the URL starts with http(s):// for urlparse to work correctly
     if not redirect_url.startswith(('http:', 'https:')):
@@ -47,6 +58,8 @@ def extract_actual_url(redirect_url):
     actual_url_decoded = unquote(actual_url)
     return actual_url_decoded
 
+
+# Attempts to scrape the content of a given URL, and clean up the returned text.
 def scrape(url):
     headers = {'User-Agent': 'Mozilla/5.0'}
     content = ""
@@ -84,7 +97,7 @@ def scrape(url):
     return content
 
 
-
+# Saves a timestamped output file.
 def save_file(input_string):
     print("Saving ...")
     # Generate a timestamped filename
