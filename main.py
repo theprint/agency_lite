@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     # Variables needed to process request
     prompt_topic = topic  # Original prompt is saved for later reference.
-    last_response = ""
+    last_response = ""  # For keeping context
 
     
     for agent in team.agents:

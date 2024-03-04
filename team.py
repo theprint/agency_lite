@@ -11,7 +11,7 @@ class Team:
         # Customize this block to fit your agents:
         # # # # # # # # # # # # # # # # # # # # # # #
 
-        if agent.role == "text cleaner":
+        if agent.role == "Research":
             print("Searching the web ...")
             cleaned_text = ""
             searchresults = tools.simple_web_search(topic)
@@ -25,13 +25,14 @@ class Team:
                 p = f"TEXT {rnum}:\n\t{c}\n"
                 self.sump += p
             topic += self.sump
-        if agent.role == "summarizer":
+
+        if agent.role == "Writer":
             print("Starting summarization.")
             topic = last_response
-        return topic
 
         # # # # # # # # # # # # # # # # # # # # # # #
         # End of custom code block
+        return topic
 
 team = Team()
 
@@ -41,15 +42,15 @@ team = Team()
 
 # Example Agent to search the web, clean up the results and send them back.
 searchcleaner = Agent()
-searchcleaner.role = "text cleaner"
+searchcleaner.role = "Research"
 searchcleaner.model = "gpt-4-1106-preview"
 searchcleaner.description = "You receive messy and unorganized text from search results and will attempt to clean them up. This includes removing all HTML, XML and similar tagging, but also text that is not directly related to the main content. The result should be a coherent article of text, based on available paragraphs and sections from the source material provided."
 searchcleaner.prompts = ["Please clean up the following text and return the cleaned, clearly separated results without commentary or additional notes, but ALWAYS include the link to each search result at the end of each summary:"]
 team.agents.append(searchcleaner)
 
-# Example Agent to summarize text. This Agent has two tasks, first to summarize and organize the results from the text cleaner Agent, and then to summarize these summaries to use as an intro.
+# Example Agent to summarize text. This Agent has two tasks, first to summarize and organize the results from the Researcher Agent, and then to summarize these summaries to use as an intro.
 summarizer = Agent()
-summarizer.role = "summarizer"
+summarizer.role = "Writer"
 summarizer.model = "gpt-3.5-turbo-0125"
 summarizer.description = "You are an expert in taking long-form text and extracting and creating a summary of its key points, suggestions or ideas."
 summarizer.prompts = ["Please summarize the following search results to help readers decide whether these articles is for them. Return a list of individual summaries and ALWAYS include the relevant link for each one:",

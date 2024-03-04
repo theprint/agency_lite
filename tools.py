@@ -20,7 +20,7 @@ def getResponse(prompt, agent, client):
 # Shortens text that is larger the max chunk size, defined in config.py
 def shorten(text, agent, client):
     if (len(text) > config.MAX_CHUNK_SIZE):
-        print(f"Response was {len(text)} characters long. Shortening to nax. {config.MAX_CHUNK_SIZE} characters.")
+        print(f"Response was {len(text)} characters long. Shortening to max. {config.MAX_CHUNK_SIZE} characters.")
         text = getResponse(f"Shorten the following text while maintaining the link, all main points and arguments. Make sure the summary is under {config.MAX_CHUNK_SIZE} characters. The final output should have: a headline, the summary, and MUST include the link URL to the source story. TEXT TO SHORTEN: {text}", agent, client)
         return text
 
