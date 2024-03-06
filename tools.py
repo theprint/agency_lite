@@ -17,6 +17,11 @@ def getResponse(prompt, agent, client):
             )
     return response.choices[0].message.content
 
+# Method for converting user input to INSTRUCT format
+def instr(text):
+    text = f"[INST]{text}[/INST]"
+    return text
+
 # Shortens text that is larger the max chunk size, defined in config.py
 def shorten(text, agent, client):
     if (len(text) > config.MAX_CHUNK_SIZE):

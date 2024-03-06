@@ -17,6 +17,10 @@ if __name__ == '__main__':
     # Initial prompt from the user.
     topic = input("What would you like news about? ")
 
+    # Add [INST][/INST] tags if required
+    if config.INSTRUCT_FORMAT is True:
+        topic = tools.instr(topic)
+
     # Variables needed to process request
     prompt_topic = topic  # Original prompt is saved for later reference.
     last_response = ""  # For keeping context
